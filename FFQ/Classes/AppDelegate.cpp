@@ -16,6 +16,8 @@
 #include "XMLHTTPRequest.h"
 #include "jsb_websocket.h"
 
+#include "views/layers/Game.h"
+
 USING_NS_CC;
 using namespace CocosDenshion;
 
@@ -39,6 +41,26 @@ bool AppDelegate::applicationDidFinishLaunching()
     
     // set FPS. the default value is 1.0/60 if you don't call this
     pDirector->setAnimationInterval(1.0 / 60);
+
+
+	#if(CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+	std::string sWritablePath = CCFileUtils::sharedFileUtils()->getWritablePath();
+	std::vector<std::string> sSsearchPaths = CCFileUtils::sharedFileUtils()->getSearchPaths();
+	std::string newSearchPath = sWritablePath;
+	newSearchPath.append("FFQRes/");
+	sSsearchPaths.push_back(newSearchPath);
+	CCFileUtils::sharedFileUtils()->setSearchPaths(sSsearchPaths);
+	#endif
+
+
+	CCScene *pScene = cocos2d::CCScene::create();
+	my::Game* layer = my::Game::create();
+	pScene->addChild(layer);
+
+    // run
+    pDirector->runWithScene(pScene);
+
+	return true;
     
     ScriptingCore* sc = ScriptingCore::getInstance();
     sc->addRegisterCallback(register_all_cocos2dx);
@@ -56,14 +78,7 @@ bool AppDelegate::applicationDidFinishLaunching()
 
     sc->start();
 
-	#if(CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
-	std::string sWritablePath = CCFileUtils::sharedFileUtils()->getWritablePath();
-	std::vector<std::string> sSsearchPaths = CCFileUtils::sharedFileUtils()->getSearchPaths();
-	std::string newSearchPath = sWritablePath;
-	newSearchPath.append("FFQRes/");
-	sSsearchPaths.push_back(newSearchPath);
-	CCFileUtils::sharedFileUtils()->setSearchPaths(sSsearchPaths);
-	#endif
+	
     
     CCScriptEngineProtocol *pEngine = ScriptingCore::getInstance();
     CCScriptEngineManager::sharedManager()->setScriptEngine(pEngine);
